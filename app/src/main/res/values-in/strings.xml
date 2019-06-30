@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string name="app_name">Submission 2</string>
+        <string name="app_name">Movie Catalogue</string>
         <string name="title_movie">Film</string>
         <string name="title_tv_shows">Acara TV</string>
         <string name="change_language_settings">Ubah Pengaturan Bahasa</string>
         <string name="release_date">Tanggal Rilis :</string>
         <string name="string_desc">Deskripsi</string>
+        <string name="loading_movies">Mendapatkan List Film</string>
+        <string name="loading_tv">Mendapatkan List Acara TV</string>
 </resources>

@@ -3,35 +3,43 @@ package com.syafrizal.submission2.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.syafrizal.submission2.Models.Movie;
 import com.syafrizal.submission2.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
-    private List<Movie> movies;
+    private ArrayList<Movie> movies;
     private Context context;
     public OnAdapterClickListener listener;
+    private String type;
 
-    public interface OnAdapterClickListener{
+    public interface OnAdapterClickListener {
         void DetailonClick(Movie movie);
     }
 
-    public MovieAdapter(Context context) {
+    public MovieAdapter(Context context, String type) {
         this.context = context;
+        this.type = type;
     }
 
     public void setListener(OnAdapterClickListener listener) {
         this.listener = listener;
     }
 
-    public void setMovies(List<Movie> movies) {
+    public void setMovies(ArrayList<Movie> movies) {
         this.movies = movies;
     }
 
@@ -39,17 +47,41 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public MovieAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_movies,viewGroup,false);
+                .inflate(R.layout.item_movies, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieAdapter.ViewHolder viewHolder, int i) {
+        runEnterAnimation(viewHolder.itemView);
         Movie movie = movies.get(i);
-        viewHolder.titleText.setText(movie.getTitle());
-        viewHolder.descText.setText(movie.getDesc());
-        viewHolder.posterImage.setImageResource(movie.getPoster());
+        String image_url = movie.getImagePoster();
+        if (this.type == "movie") {
+            viewHolder.titleText.setText(movie.getTitle());
+        } else {
+            viewHolder.titleText.setText(movie.getName());
+        }
+
+        viewHolder.descText.setText(movie.getOverview());
+        Picasso.get()
+                .load(image_url)
+                .placeholder(android.R.drawable.sym_def_app_icon)
+                .error(android.R.drawable.sym_def_app_icon)
+                .into(viewHolder.posterImage);
     }
+
+    private void runEnterAnimation(View view) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        view.setTranslationY(display.getHeight());
+        view.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator(3.f))
+                .setDuration(700)
+                .start();
+    }
+
+
 
     @Override
     public int getItemCount() {
@@ -60,6 +92,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView titleText;
         TextView descText;
         ImageView posterImage;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             titleText = itemView.findViewById(R.id.text_title);

@@ -17,6 +17,7 @@ import com.syafrizal.submission2.R;
 
 public class MainActivity extends AppCompatActivity {
     Fragment fragment;
+    Fragment mContent;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -41,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState != null) {
+            fragment = getSupportFragmentManager().getFragment(savedInstanceState, "MoviesFragment");
+        }
+
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -64,8 +69,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void addFragment(String fragName){
-        switch (fragName){
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "MoviesFragment", fragment);
+    }
+
+    private void addFragment(String fragName) {
+        switch (fragName) {
             case "movies":
                 fragment = new MoviesFragment();
 

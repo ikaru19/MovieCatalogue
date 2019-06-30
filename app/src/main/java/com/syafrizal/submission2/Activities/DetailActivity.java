@@ -1,10 +1,14 @@
 package com.syafrizal.submission2.Activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.syafrizal.submission2.Models.Movie;
 import com.syafrizal.submission2.R;
 
@@ -18,19 +22,43 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Movie movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
+        String type = getIntent().getStringExtra("TYPE");
 
 
         TextView textTitle = findViewById(R.id.text_title);
         TextView textDesc = findViewById(R.id.text_desc);
         TextView textDate = findViewById(R.id.text_date);
+        RatingBar ratingBar = findViewById(R.id.ratingBar);
         ImageView ivPoster = findViewById(R.id.iv_poster);
-        textTitle.setText(movie.getTitle());
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy");
-        String strDate = formatter.format(movie.getReleaseDate());
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setMessage(getResources().getString(R.string.loading_tv));
+        progress.setCancelable(false);
+        progress.show();
+        double vote = movie.getVoteAverage();
+        float rating = (float) vote;
+        rating = (rating/10 * 5);
+        ratingBar.setRating(rating);
+        Log.d("TEST",String.valueOf(rating));
+        textDesc.setText(movie.getOverview());
 
-        textDate.setText(strDate);
-        textDesc.setText(movie.getDesc());
-        ivPoster.setImageResource(movie.getPoster());
+        Picasso.get()
+                .load(movie.getImagePoster())
+                .placeholder(android.R.drawable.sym_def_app_icon)
+                .error(android.R.drawable.sym_def_app_icon)
+                .into(ivPoster);
+
+
+        if (type.equalsIgnoreCase("movie")) {
+            textTitle.setText(movie.getTitle());
+            textDate.setText(movie.getReleaseDate());
+
+        } else {
+            textTitle.setText(movie.getName());
+            textDate.setText(movie.getFirst_air_date());
+
+        }
+
+        progress.dismiss();
     }
 }
