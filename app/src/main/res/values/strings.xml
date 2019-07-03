@@ -7,6 +7,7 @@
     <string name="string_desc">Description</string>
     <string name="loading_movies">Getting Movie</string>
     <string name="loading_tv">Getting TV Shows</string>
-
+    <string name="loading">Getting Data</string>
+    <string name="recomendation">Recommendation</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

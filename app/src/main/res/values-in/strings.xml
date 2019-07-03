@@ -8,4 +8,6 @@
         <string name="string_desc">Deskripsi</string>
         <string name="loading_movies">Mendapatkan List Film</string>
         <string name="loading_tv">Mendapatkan List Acara TV</string>
+        <string name="loading">Mendapatkan Data</string>
+        <string name="recomendation">Rekomendasi</string>
 </resources>

@@ -3,7 +3,6 @@ package com.syafrizal.submission2.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -18,7 +18,6 @@ import com.syafrizal.submission2.Models.Movie;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
     private ArrayList<Movie> movies;
@@ -61,8 +60,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         } else {
             viewHolder.titleText.setText(movie.getName());
         }
-
+        viewHolder.ratingBar.setRating(movie.getRating());
+        viewHolder.popularText.setText(movie.getPopularity().toString());
         viewHolder.descText.setText(movie.getOverview());
+        viewHolder.voteText.setText(movie.getVoteCount().toString());
         Picasso.get()
                 .load(image_url)
                 .placeholder(android.R.drawable.sym_def_app_icon)
@@ -91,13 +92,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleText;
         TextView descText;
+        TextView popularText;
+        TextView voteText;
         ImageView posterImage;
+        RatingBar ratingBar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            titleText = itemView.findViewById(R.id.text_title);
-            descText = itemView.findViewById(R.id.text_desc);
-            posterImage = itemView.findViewById(R.id.image_poster);
+            titleText = itemView.findViewById(R.id.text_title_rec);
+            descText = itemView.findViewById(R.id.textViewDescItem);
+            popularText = itemView.findViewById(R.id.textViewPopularity);
+            voteText = itemView.findViewById(R.id.textViewVoteCountItem);
+            posterImage = itemView.findViewById(R.id.image_rec);
+            ratingBar = itemView.findViewById(R.id.ratingBarItem);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

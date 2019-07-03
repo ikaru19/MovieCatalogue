@@ -67,6 +67,19 @@ public class Movie implements Parcelable {
     @Expose
     private String first_air_date;
 
+    private float rating;
+
+    public float getRating() {
+        double vote = getVoteAverage();
+        rating = (float) vote;
+        rating = (rating / 10 * 5);
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
     public String getName() {
         return name;
     }
@@ -168,7 +181,7 @@ public class Movie implements Parcelable {
     }
 
     public String getBackdropPath() {
-        return backdropPath;
+        return "http://image.tmdb.org/t/p/original//" + backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) {
