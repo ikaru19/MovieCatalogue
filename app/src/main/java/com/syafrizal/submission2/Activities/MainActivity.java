@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.syafrizal.submission2.Fragments.FavoritesFragment;
 import com.syafrizal.submission2.Fragments.MoviesFragment;
 import com.syafrizal.submission2.Fragments.ShowFragment;
 import com.syafrizal.submission2.R;
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_shows:
                     addFragment("shows");
+                    return true;
+                case R.id.navigation_favorites:
+                    addFragment("fav");
                     return true;
             }
             return false;
@@ -83,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "shows":
                 fragment = new ShowFragment();
+                break;
+
+            case "fav":
+                fragment = new FavoritesFragment();
                 break;
         }
         getSupportFragmentManager().beginTransaction()

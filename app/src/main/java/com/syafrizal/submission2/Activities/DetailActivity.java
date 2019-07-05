@@ -63,7 +63,7 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
 
 
         final ProgressDialog progress = new ProgressDialog(this);
-        progress.setMessage(getResources().getString(R.string.loading_tv));
+        progress.setMessage(getResources().getString(R.string.loading));
         progress.setCancelable(false);
         progress.show();
 
@@ -83,13 +83,33 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
                 .load(movie.getBackdropPath())
                 .placeholder(android.R.drawable.sym_def_app_icon)
                 .error(android.R.drawable.sym_def_app_icon)
-                .into(ivBackdrop);
+                .into(ivBackdrop,new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progress.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
 
         Picasso.get()
                 .load(movie.getImagePoster())
-                .placeholder(android.R.drawable.sym_def_app_icon)
+                .placeholder( R.drawable.progress_animation)
                 .error(android.R.drawable.sym_def_app_icon)
-                .into(ivPoster);
+                .into(ivPoster,new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
 
 
         if (type.equalsIgnoreCase("movie")) {
@@ -103,7 +123,7 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
             setTitle(movie.getName());
 
         }
-        progress.dismiss();
+
 
     }
 

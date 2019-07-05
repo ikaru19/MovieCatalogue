@@ -53,7 +53,7 @@ public class RecomendationAdapter extends RecyclerView.Adapter<RecomendationAdap
         }
         Picasso.get()
                 .load(image_url)
-                .placeholder(android.R.drawable.sym_def_app_icon)
+                .placeholder( R.drawable.progress_animation)
                 .error(android.R.drawable.sym_def_app_icon)
                 .into(viewHolder.imgPoster);
     }
