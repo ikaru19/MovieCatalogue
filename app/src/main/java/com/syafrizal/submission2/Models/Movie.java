@@ -152,6 +152,10 @@ public class Movie implements Parcelable {
         return "http://image.tmdb.org/t/p/w342//" + posterPath;
     }
 
+    public String getImagePosterSmall() {
+        return "http://image.tmdb.org/t/p/w154//" + posterPath;
+    }
+
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
@@ -181,7 +185,7 @@ public class Movie implements Parcelable {
     }
 
     public String getBackdropPath() {
-        return "http://image.tmdb.org/t/p/original//" + backdropPath;
+        return "http://image.tmdb.org/t/p/w500//" + backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) {

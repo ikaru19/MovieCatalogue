@@ -13,9 +13,11 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.syafrizal.submission2.Adapters.MovieAdapter;
@@ -28,6 +30,7 @@ import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
 
+import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,9 +42,19 @@ import static android.support.constraint.Constraints.TAG;
 public class DetailActivity extends AppCompatActivity implements MovieAdapter.OnAdapterClickListener {
     public static final String EXTRA_MOVIE = "extra_movie";
     private static Retrofit retrofit = null;
+
+    Button btnWatchList;
+    ImageView ivPoster;
+    ImageView ivBackdrop;
+
+
     ArrayList<Movie> movies = new ArrayList<>();
+    ArrayList<Movie> local;
+
     Movie movie;
     String type;
+
+
     private RecyclerView recyclerView;
     RecomendationAdapter adapter;
 
@@ -57,8 +70,9 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
         TextView textDesc = findViewById(R.id.text_desc);
         TextView textDate = findViewById(R.id.text_date);
         RatingBar ratingBar = findViewById(R.id.ratingBarDetail);
-        ImageView ivPoster = findViewById(R.id.iv_poster);
-        ImageView ivBackdrop = findViewById(R.id.iv_backdrop_detail);
+        ivPoster = findViewById(R.id.iv_poster);
+        ivBackdrop = findViewById(R.id.iv_backdrop_detail);
+        btnWatchList = findViewById(R.id.btnWatchList);
         recyclerView = findViewById(R.id.rv_recomendations);
 
 
@@ -67,14 +81,19 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
         progress.setCancelable(false);
         progress.show();
 
+        getLocalDB();
+        if (checkLocalDB()) {
+            btnWatchList.setText(getString(R.string.remove_watchlist));
+        }
 
-        adapter = new RecomendationAdapter(this,type);
+
+        adapter = new RecomendationAdapter(this, type);
         adapter.setListener(this);
         new GetData().execute(type);
 
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
+
 
         ratingBar.setRating(movie.getRating());
         textDesc.setText(movie.getOverview());
@@ -83,33 +102,13 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
                 .load(movie.getBackdropPath())
                 .placeholder(android.R.drawable.sym_def_app_icon)
                 .error(android.R.drawable.sym_def_app_icon)
-                .into(ivBackdrop,new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progress.dismiss();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
+                .into(ivBackdrop);
 
         Picasso.get()
                 .load(movie.getImagePoster())
-                .placeholder( R.drawable.progress_animation)
+                .placeholder(R.drawable.progress_animation)
                 .error(android.R.drawable.sym_def_app_icon)
-                .into(ivPoster,new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
+                .into(ivPoster);
 
 
         if (type.equalsIgnoreCase("movie")) {
@@ -124,31 +123,87 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
 
         }
 
+        progress.dismiss();
+
 
     }
 
     @Override
     public void DetailonClick(Movie movie) {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("TYPE",type);
+        intent.putExtra("TYPE", type);
         intent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
         startActivity(intent);
 
     }
 
-    private class GetData extends AsyncTask<String, Void,String>{
+    public void FavoritesOnClick(View view) {
+
+        if (checkLocalDB()) {
+            int i = getIndex();
+            local.remove(i);
+            Toast.makeText(this, getString(R.string.remove_watchlist), Toast.LENGTH_SHORT).show();
+            btnWatchList.setText(getString(R.string.add_to_watchlist));
+        } else {
+            local.add(movie);
+            Toast.makeText(this, getString(R.string.added_to_watchlist), Toast.LENGTH_SHORT).show();
+            btnWatchList.setText(getString(R.string.remove_watchlist));
+        }
+
+        saveLocalDB();
+    }
+
+    private boolean checkLocalDB() {
+        for (Movie movie : local) {
+            if (movie.getId().equals(this.movie.getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int getIndex() {
+        int i = -1;
+        for (Movie movie : local) {
+            i++;
+            if (movie.getId().equals(this.movie.getId())) {
+                return i;
+            }
+        }
+
+        return i;
+    }
+
+    private void getLocalDB() {
+        if (type.equalsIgnoreCase("movie"))
+            local = Paper.book().read(Constant.PaperDB.MOVIES);
+        else
+            local = Paper.book().read(Constant.PaperDB.SHOWS);
+    }
+
+    private void saveLocalDB() {
+        if (type.equalsIgnoreCase("movie"))
+            Paper.book().write(Constant.PaperDB.MOVIES, local);
+        else
+            Paper.book().write(Constant.PaperDB.SHOWS, local);
+    }
+
+
+    private class GetData extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... strings) {
+            if (retrofit == null) {
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(Constant.BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
+
+            MovieApiService movieApiService = retrofit.create(MovieApiService.class);
 
             if (DetailActivity.this.type.equalsIgnoreCase("movie")) {
-                if (retrofit == null) {
-                    retrofit = new Retrofit.Builder()
-                            .baseUrl(Constant.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                }
-                MovieApiService movieApiService = retrofit.create(MovieApiService.class);
                 Call<MovieResponse> call = movieApiService.getRecMov(movie.getId().toString(), Constant.API_KEY);
                 call.enqueue(new Callback<MovieResponse>() {
                     @Override
@@ -165,15 +220,8 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
                         Log.e(TAG, throwable.toString());
                     }
                 });
-            }else{
-                if (retrofit == null) {
-                    retrofit = new Retrofit.Builder()
-                            .baseUrl(Constant.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                }
-                MovieApiService movieApiService = retrofit.create(MovieApiService.class);
-                Call<MovieResponse> call = movieApiService.getRecTV(movie.getId().toString() , Constant.API_KEY);
+            } else {
+                Call<MovieResponse> call = movieApiService.getRecTV(movie.getId().toString(), Constant.API_KEY);
                 call.enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -195,4 +243,5 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
         }
 
     }
+
 }

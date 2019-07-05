@@ -11,10 +11,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.syafrizal.submission2.Constant;
 import com.syafrizal.submission2.Fragments.FavoritesFragment;
 import com.syafrizal.submission2.Fragments.MoviesFragment;
 import com.syafrizal.submission2.Fragments.ShowFragment;
+import com.syafrizal.submission2.Models.Movie;
 import com.syafrizal.submission2.R;
+
+import java.util.ArrayList;
+
+import io.paperdb.Paper;
 
 public class MainActivity extends AppCompatActivity {
     Fragment fragment;
@@ -45,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initPaperDb();
 
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, "MoviesFragment");
@@ -96,6 +104,16 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    public void initPaperDb(){
+        //init paperdb
+        Paper.init(this);
+        if(Paper.book().read(Constant.PaperDB.MOVIES) == null)
+            Paper.book().write(Constant.PaperDB.MOVIES,new ArrayList<Movie>());
+
+        if (Paper.book().read(Constant.PaperDB.SHOWS) == null)
+            Paper.book().write(Constant.PaperDB.SHOWS,new ArrayList<Movie>());
     }
 
 }

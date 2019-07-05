@@ -26,7 +26,7 @@
             <ImageView
                 android:id="@+id/iv_backdrop_detail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:scaleType="fitXY"
                 app:layout_collapseMode="parallax" />
 
@@ -136,13 +136,12 @@
 
                 <RatingBar
                     android:id="@+id/ratingBarDetail"
-                    style="@android:style/Widget.Material.RatingBar.Small"
+                    style="@android:style/Widget.Material.RatingBar.Indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:isIndicator="true"
                     android:numStars="5"
-                    android:progressTint="#FFEB3B"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.497"
                     app:layout_constraintStart_toStartOf="parent"
@@ -172,6 +171,22 @@
                     android:text="@string/recomendation"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnWatchList" />
+
+                <Button
+                    android:id="@+id/btnWatchList"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="#B22450"
+                    android:fontFamily="@font/lato_light"
+                    android:onClick="FavoritesOnClick"
+                    android:text="@string/add_to_watchlist"
+                    android:textColor="#FFFFFF"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/text_desc" />
             </android.support.constraint.ConstraintLayout>

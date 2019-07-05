@@ -45,7 +45,7 @@ public class RecomendationAdapter extends RecyclerView.Adapter<RecomendationAdap
     @Override
     public void onBindViewHolder(@NonNull RecomendationAdapter.ViewHolder viewHolder, int i) {
         Movie movie = movies.get(i);
-        String image_url = movie.getImagePoster();
+        String image_url = movie.getImagePosterSmall();
         if (this.type.equalsIgnoreCase("movie")) {
             viewHolder.textTitle.setText(movie.getTitle());
         } else {

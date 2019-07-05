@@ -3,7 +3,7 @@
         <string name="app_name">Movie Catalogue</string>
         <string name="title_movie">Film</string>
         <string name="title_tv_shows">Acara TV</string>
-        <string name="title_favorites">Daftar Pantauan</string>
+        <string name="title_favorites">Daftar Watchlist</string>
         <string name="change_language_settings">Ubah Pengaturan Bahasa</string>
         <string name="release_date">Tanggal Rilis :</string>
         <string name="string_desc">Deskripsi</string>
@@ -11,4 +11,7 @@
         <string name="loading_tv">Mendapatkan List Acara TV</string>
         <string name="loading">Mendapatkan Data</string>
         <string name="recomendation">Rekomendasi</string>
+        <string name="add_to_watchlist">Tambah ke Watchlist</string>
+        <string name="added_to_watchlist">Ditambahkan ke Watchlist</string>
+        <string name="remove_watchlist">Hapus dari Watchlist</string>
 </resources>
