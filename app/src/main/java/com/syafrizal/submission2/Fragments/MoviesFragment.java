@@ -54,6 +54,7 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
 
     public MoviesFragment() {
         // Required empty public constructor
+        this.setRetainInstance(true);
     }
 
 
@@ -63,10 +64,17 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         recyclerView = view.findViewById(R.id.moviesRecyclerView);
-        adapter = new MovieAdapter(getContext(), "movie");
-        adapter.setListener(this);
-        connectAndGetApiData();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+            connectAndGetApiData();
+            adapter.setMovies(movies);
+            adapter.notifyDataSetChanged();
+
+
+
+
+
+
 
         AnimationSet set = new AnimationSet(true);
 
@@ -80,15 +88,38 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
         );
         animation.setDuration(100);
         set.addAnimation(animation);
-        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+
+    }
+
+
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new MovieAdapter(getContext(), "movie");
+        adapter.setListener(this);
+    }
+
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//        movies = savedInstanceState.getParcelableArrayList(Constant.SAVED_KEY);
+//    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("MOVIES", movies);
     }
 
 
@@ -118,6 +149,8 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
 
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable throwable) {
+                progress.dismiss();
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, throwable.toString());
             }
         });
