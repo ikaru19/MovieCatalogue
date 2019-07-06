@@ -4,6 +4,8 @@ package com.syafrizal.submission2.Fragments;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 
 import com.syafrizal.submission2.Activities.DetailActivity;
 import com.syafrizal.submission2.Adapters.MovieAdapter;
@@ -49,13 +55,48 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show, container, false);
+
+
+
+        AnimationSet set = new AnimationSet(true);
+
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(500);
+        set.addAnimation(animation);
+
+        animation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
+        );
+        animation.setDuration(100);
+        set.addAnimation(animation);
+
+        return view;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.showRecyclerView);
-        adapter = new MovieAdapter(getContext(),"tv");
-        adapter.setListener(this);
-        connectAndGetApiData();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new MovieAdapter(getContext(), "shows");
+        adapter.setListener(this);
+        setRetainInstance(true);
+        if (savedInstanceState == null){
+            connectAndGetApiData();
+            Log.d("TEST","NULL");
+        }else{
+            movies = savedInstanceState.getParcelableArrayList(Constant.SAVED_KEY);
+            adapter.refill(movies);
+            Log.d("TEST","BERISI");
+        }
     }
 
     public void connectAndGetApiData(){
@@ -86,6 +127,12 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
                 Log.e(TAG, throwable.toString());
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
+        super.onSaveInstanceState(outState);
     }
 
 

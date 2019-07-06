@@ -6,7 +6,9 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -24,8 +26,10 @@ import io.paperdb.Paper;
 
 public class MainActivity extends AppCompatActivity {
     Fragment fragment;
+    FragmentManager fragmentManager;
     Fragment mContent;
-
+    int selectedId;
+    private final String MOVIE_FRAGMENT_TAG = "myfragmentmovie";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -34,13 +38,19 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_movies:
-                    addFragment("movies");
+                        selectedId = R.id.navigation_movies;
+                        fragment = new MoviesFragment();
+                        buildFrag(fragment,MOVIE_FRAGMENT_TAG);
                     return true;
                 case R.id.navigation_shows:
-                    addFragment("shows");
+                    selectedId = R.id.navigation_movies;
+                        fragment = new ShowFragment();
+                        buildFrag(fragment,MOVIE_FRAGMENT_TAG);
                     return true;
                 case R.id.navigation_favorites:
-                    addFragment("fav");
+                    selectedId = R.id.navigation_favorites;
+                        fragment = new FavoritesFragment();
+                        buildFrag(fragment, MOVIE_FRAGMENT_TAG);
                     return true;
             }
             return false;
@@ -51,17 +61,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentManager = getSupportFragmentManager();
+        fragment = fragmentManager.findFragmentByTag(MOVIE_FRAGMENT_TAG);
+
+        if (fragment == null) {
+            fragment = new MoviesFragment();
+            buildFrag(fragment,MOVIE_FRAGMENT_TAG);
+        }
 
         initPaperDb();
 
-        if (savedInstanceState != null) {
-            fragment = getSupportFragmentManager().getFragment(savedInstanceState, "MoviesFragment");
+//        if (savedInstanceState == null){
+//            buildFrag(new MoviesFragment());
+//        }else{
+//            Fragment existFrag = fragmentManager.getFragment(savedInstanceState,Constant.FRAGMENT_KEY);
+//            fragmentManager.beginTransaction().replace(R.id.fragment_container,existFrag).commit();
+//        }
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+
+        if (savedInstanceState == null){
+            navigation.setSelectedItemId(R.id.navigation_movies);
+            selectedId = R.id.navigation_movies;
+        }else{
+            selectedId = savedInstanceState.getInt("IDSELECT");
         }
 
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.navigation_movies);
+
     }
 
     @Override
@@ -80,40 +108,27 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        getSupportFragmentManager().putFragment(outState, Constant.FRAGMENT_KEY, this.fragment);
+        outState.putInt("IDSELECT",selectedId);
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState, "MoviesFragment", fragment);
     }
 
-    private void addFragment(String fragName) {
-        switch (fragName) {
-            case "movies":
-                fragment = new MoviesFragment();
-
-                break;
-            case "shows":
-                fragment = new ShowFragment();
-                break;
-
-            case "fav":
-                fragment = new FavoritesFragment();
-                break;
-        }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+    private void buildFrag(Fragment fragment,String Tag) {
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment, Tag)
                 .commit();
     }
 
-    public void initPaperDb(){
+    public void initPaperDb() {
         //init paperdb
         Paper.init(this);
-        if(Paper.book().read(Constant.PaperDB.MOVIES) == null)
-            Paper.book().write(Constant.PaperDB.MOVIES,new ArrayList<Movie>());
+        if (Paper.book().read(Constant.PaperDB.MOVIES) == null)
+            Paper.book().write(Constant.PaperDB.MOVIES, new ArrayList<Movie>());
 
         if (Paper.book().read(Constant.PaperDB.SHOWS) == null)
-            Paper.book().write(Constant.PaperDB.SHOWS,new ArrayList<Movie>());
+            Paper.book().write(Constant.PaperDB.SHOWS, new ArrayList<Movie>());
     }
 
 }

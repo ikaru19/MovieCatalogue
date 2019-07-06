@@ -114,4 +114,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         }
     }
+
+    public void refill(ArrayList<Movie> items) {
+        this.movies = new ArrayList<>();
+        this.movies.addAll(items);
+
+        notifyDataSetChanged();
+    }
 }

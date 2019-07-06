@@ -54,8 +54,9 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
 
     public MoviesFragment() {
         // Required empty public constructor
-        this.setRetainInstance(true);
     }
+
+
 
 
     @Override
@@ -63,16 +64,6 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
-        recyclerView = view.findViewById(R.id.moviesRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
-            connectAndGetApiData();
-            adapter.setMovies(movies);
-            adapter.notifyDataSetChanged();
-
-
-
-
 
 
 
@@ -92,9 +83,18 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
         return view;
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        recyclerView = view.findViewById(R.id.moviesRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+
+
 
 
 
@@ -108,6 +108,16 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
         super.onCreate(savedInstanceState);
         adapter = new MovieAdapter(getContext(), "movie");
         adapter.setListener(this);
+        setRetainInstance(true);
+        if (savedInstanceState == null){
+            connectAndGetApiData();
+            Log.d("TEST","NULL");
+        }else{
+            movies = savedInstanceState.getParcelableArrayList(Constant.SAVED_KEY);
+            adapter.refill(movies);
+            Log.d("TEST","BERISI");
+        }
+
     }
 
 //    @Override
@@ -141,9 +151,8 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
 
                 movies = response.body().getResults();
+                adapter.refill(movies);
                 progress.dismiss();
-                adapter.setMovies(movies);
-                adapter.notifyDataSetChanged();
 
             }
 
