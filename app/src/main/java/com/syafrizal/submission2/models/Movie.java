@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Models;
+package com.syafrizal.submission2.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,11 +6,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Movie implements Parcelable {
@@ -187,6 +183,13 @@ public class Movie implements Parcelable {
     public String getBackdropPath() {
         return "http://image.tmdb.org/t/p/w500//" + backdropPath;
     }
+
+
+    public String getBackdrop() {
+        return  backdropPath;
+    }
+
+
 
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;

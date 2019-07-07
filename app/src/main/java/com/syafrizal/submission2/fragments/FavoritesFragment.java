@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Fragments;
+package com.syafrizal.submission2.fragments;
 
 
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.syafrizal.submission2.Adapters.TabAdapter;
+import com.syafrizal.submission2.adapters.TabAdapter;
 import com.syafrizal.submission2.R;
 
 /**

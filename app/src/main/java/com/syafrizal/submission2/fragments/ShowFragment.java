@@ -1,10 +1,9 @@
-package com.syafrizal.submission2.Fragments;
+package com.syafrizal.submission2.fragments;
 
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,21 +16,17 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
-import android.widget.Toast;
 
-import com.syafrizal.submission2.Activities.DetailActivity;
-import com.syafrizal.submission2.Adapters.MovieAdapter;
+import com.syafrizal.submission2.activities.DetailActivity;
+import com.syafrizal.submission2.adapters.MovieAdapter;
 import com.syafrizal.submission2.Constant;
-import com.syafrizal.submission2.Helper.MovieApiService;
-import com.syafrizal.submission2.Models.Movie;
-import com.syafrizal.submission2.Models.MovieResponse;
+import com.syafrizal.submission2.helper.MovieApiService;
+import com.syafrizal.submission2.models.Movie;
+import com.syafrizal.submission2.models.MovieResponse;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,29 +36,25 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.support.constraint.Constraints.TAG;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterClickListener {
+public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClickListener {
     private RecyclerView recyclerView;
     private static Retrofit retrofit = null;
-    ArrayList<Movie> movies = new ArrayList<>();
+    ArrayList<Movie> movies = new ArrayList<>() ;
     MovieAdapter adapter;
 
-
-    public MoviesFragment() {
+    public ShowFragment() {
         // Required empty public constructor
     }
-
-
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_movies, container, false);
+        View view = inflater.inflate(R.layout.fragment_show, container, false);
 
 
 
@@ -84,29 +75,18 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        recyclerView = view.findViewById(R.id.moviesRecyclerView);
+        recyclerView = view.findViewById(R.id.showRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-
-
-
-
-
-
     }
-
-
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new MovieAdapter(getContext(), "movie");
+        adapter = new MovieAdapter(getContext(), "shows");
         adapter.setListener(this);
         setRetainInstance(true);
         if (savedInstanceState == null){
@@ -117,25 +97,11 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
             adapter.refill(movies);
             Log.d("TEST","BERISI");
         }
-
     }
 
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//        movies = savedInstanceState.getParcelableArrayList(Constant.SAVED_KEY);
-//    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
-        super.onSaveInstanceState(outState);
-    }
-
-
-    public void connectAndGetApiData() {
+    public void connectAndGetApiData(){
         final ProgressDialog progress = new ProgressDialog(getContext());
-        progress.setMessage(getResources().getString(R.string.loading_movies));
+        progress.setMessage(getResources().getString(R.string.loading_tv));
         progress.setCancelable(false);
         progress.show();
         if (retrofit == null) {
@@ -145,34 +111,36 @@ public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterCl
                     .build();
         }
         MovieApiService movieApiService = retrofit.create(MovieApiService.class);
-        Call<MovieResponse> call = movieApiService.getMovies(Constant.API_KEY);
+        Call<MovieResponse> call = movieApiService.getTv(Constant.API_KEY);
         call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
 
                 movies = response.body().getResults();
-                adapter.refill(movies);
                 progress.dismiss();
+                adapter.setMovies(movies);
+                adapter.notifyDataSetChanged();
 
             }
-
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable throwable) {
-                progress.dismiss();
-                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, throwable.toString());
             }
         });
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void DetailonClick(Movie movie) {
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra("TYPE", "movie");
+        intent.putExtra("TYPE","show");
         intent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
         startActivity(intent);
-
     }
 }
-
-

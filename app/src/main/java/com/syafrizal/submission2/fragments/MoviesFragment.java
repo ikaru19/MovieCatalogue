@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Fragments;
+package com.syafrizal.submission2.fragments;
 
 
 import android.app.ProgressDialog;
@@ -17,13 +17,14 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
+import android.widget.Toast;
 
-import com.syafrizal.submission2.Activities.DetailActivity;
-import com.syafrizal.submission2.Adapters.MovieAdapter;
+import com.syafrizal.submission2.activities.DetailActivity;
+import com.syafrizal.submission2.adapters.MovieAdapter;
 import com.syafrizal.submission2.Constant;
-import com.syafrizal.submission2.Helper.MovieApiService;
-import com.syafrizal.submission2.Models.Movie;
-import com.syafrizal.submission2.Models.MovieResponse;
+import com.syafrizal.submission2.helper.MovieApiService;
+import com.syafrizal.submission2.models.Movie;
+import com.syafrizal.submission2.models.MovieResponse;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
@@ -36,25 +37,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.support.constraint.Constraints.TAG;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClickListener {
+public class MoviesFragment extends Fragment implements MovieAdapter.OnAdapterClickListener {
     private RecyclerView recyclerView;
     private static Retrofit retrofit = null;
-    ArrayList<Movie> movies = new ArrayList<>() ;
+    ArrayList<Movie> movies = new ArrayList<>();
     MovieAdapter adapter;
 
-    public ShowFragment() {
+
+    public MoviesFragment() {
         // Required empty public constructor
     }
+
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_show, container, false);
+        View view = inflater.inflate(R.layout.fragment_movies, container, false);
 
 
 
@@ -75,18 +80,29 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
     }
 
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.showRecyclerView);
+
+        recyclerView = view.findViewById(R.id.moviesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+
+
+
+
+
     }
+
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new MovieAdapter(getContext(), "shows");
+        adapter = new MovieAdapter(getContext(), "movie");
         adapter.setListener(this);
         setRetainInstance(true);
         if (savedInstanceState == null){
@@ -97,11 +113,25 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
             adapter.refill(movies);
             Log.d("TEST","BERISI");
         }
+
     }
 
-    public void connectAndGetApiData(){
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//        movies = savedInstanceState.getParcelableArrayList(Constant.SAVED_KEY);
+//    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    public void connectAndGetApiData() {
         final ProgressDialog progress = new ProgressDialog(getContext());
-        progress.setMessage(getResources().getString(R.string.loading_tv));
+        progress.setMessage(getResources().getString(R.string.loading_movies));
         progress.setCancelable(false);
         progress.show();
         if (retrofit == null) {
@@ -111,36 +141,34 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
                     .build();
         }
         MovieApiService movieApiService = retrofit.create(MovieApiService.class);
-        Call<MovieResponse> call = movieApiService.getTv(Constant.API_KEY);
+        Call<MovieResponse> call = movieApiService.getMovies(Constant.API_KEY);
         call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
 
                 movies = response.body().getResults();
+                adapter.refill(movies);
                 progress.dismiss();
-                adapter.setMovies(movies);
-                adapter.notifyDataSetChanged();
 
             }
+
             @Override
             public void onFailure(Call<MovieResponse> call, Throwable throwable) {
+                progress.dismiss();
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, throwable.toString());
             }
         });
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
     public void DetailonClick(Movie movie) {
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra("TYPE","tv");
+        intent.putExtra("TYPE", "movie");
         intent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
         startActivity(intent);
+
     }
 }
+
+

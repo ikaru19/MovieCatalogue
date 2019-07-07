@@ -1,6 +1,6 @@
-package com.syafrizal.submission2.Helper;
+package com.syafrizal.submission2.helper;
 
-import com.syafrizal.submission2.Models.MovieResponse;
+import com.syafrizal.submission2.models.MovieResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

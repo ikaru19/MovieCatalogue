@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Activities;
+package com.syafrizal.submission2.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,16 +8,15 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.syafrizal.submission2.Constant;
-import com.syafrizal.submission2.Fragments.FavoritesFragment;
-import com.syafrizal.submission2.Fragments.MoviesFragment;
-import com.syafrizal.submission2.Fragments.ShowFragment;
-import com.syafrizal.submission2.Models.Movie;
+import com.syafrizal.submission2.databases.FavoriteHelper;
+import com.syafrizal.submission2.fragments.FavoritesFragment;
+import com.syafrizal.submission2.fragments.MoviesFragment;
+import com.syafrizal.submission2.fragments.ShowFragment;
+import com.syafrizal.submission2.models.Movie;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
@@ -69,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
             buildFrag(fragment,MOVIE_FRAGMENT_TAG);
         }
 
-        initPaperDb();
+
+
 
 //        if (savedInstanceState == null){
 //            buildFrag(new MoviesFragment());
@@ -121,14 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void initPaperDb() {
-        //init paperdb
-        Paper.init(this);
-        if (Paper.book().read(Constant.PaperDB.MOVIES) == null)
-            Paper.book().write(Constant.PaperDB.MOVIES, new ArrayList<Movie>());
 
-        if (Paper.book().read(Constant.PaperDB.SHOWS) == null)
-            Paper.book().write(Constant.PaperDB.SHOWS, new ArrayList<Movie>());
-    }
 
 }

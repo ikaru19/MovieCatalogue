@@ -1,18 +1,16 @@
-package com.syafrizal.submission2.Activities;
+package com.syafrizal.submission2.activities;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -20,12 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.syafrizal.submission2.Adapters.MovieAdapter;
-import com.syafrizal.submission2.Adapters.RecomendationAdapter;
+import com.syafrizal.submission2.adapters.MovieAdapter;
+import com.syafrizal.submission2.adapters.RecomendationAdapter;
 import com.syafrizal.submission2.Constant;
-import com.syafrizal.submission2.Helper.MovieApiService;
-import com.syafrizal.submission2.Models.Movie;
-import com.syafrizal.submission2.Models.MovieResponse;
+import com.syafrizal.submission2.databases.DatabaseHelper;
+import com.syafrizal.submission2.databases.FavoriteHelper;
+import com.syafrizal.submission2.helper.MovieApiService;
+import com.syafrizal.submission2.models.Movie;
+import com.syafrizal.submission2.models.MovieResponse;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
@@ -53,6 +53,7 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
 
     Movie movie;
     String type;
+    FavoriteHelper favoriteHelper;
 
 
     private RecyclerView recyclerView;
@@ -75,15 +76,20 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
         btnWatchList = findViewById(R.id.btnWatchList);
         recyclerView = findViewById(R.id.rv_recomendations);
 
+        favoriteHelper = FavoriteHelper.getInstance(this);
+        favoriteHelper.open();
 
         final ProgressDialog progress = new ProgressDialog(this);
         progress.setMessage(getResources().getString(R.string.loading));
         progress.setCancelable(false);
         progress.show();
 
-        getLocalDB();
         if (checkLocalDB()) {
             btnWatchList.setText(getString(R.string.remove_watchlist));
+        }
+
+        if (favoriteHelper.getAllMovies().isEmpty()){
+            Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -138,22 +144,25 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
     }
 
     public void FavoritesOnClick(View view) {
-
         if (checkLocalDB()) {
-            int i = getIndex();
-            local.remove(i);
-            Toast.makeText(this, getString(R.string.remove_watchlist), Toast.LENGTH_SHORT).show();
+            favoriteHelper.deleteFav(movie.getId());
+             Toast.makeText(this, getString(R.string.remove_watchlist), Toast.LENGTH_SHORT).show();
             btnWatchList.setText(getString(R.string.add_to_watchlist));
         } else {
-            local.add(movie);
+            favoriteHelper.insertFav(movie,type) ;
             Toast.makeText(this, getString(R.string.added_to_watchlist), Toast.LENGTH_SHORT).show();
             btnWatchList.setText(getString(R.string.remove_watchlist));
         }
 
-        saveLocalDB();
     }
 
     private boolean checkLocalDB() {
+        if (type.equals("movie")){
+            local = favoriteHelper.getAllMovies();
+        }else{
+            local = favoriteHelper.getAllShows();
+        }
+
         for (Movie movie : local) {
             if (movie.getId().equals(this.movie.getId())) {
                 return true;
@@ -163,31 +172,8 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
         return false;
     }
 
-    private int getIndex() {
-        int i = -1;
-        for (Movie movie : local) {
-            i++;
-            if (movie.getId().equals(this.movie.getId())) {
-                return i;
-            }
-        }
 
-        return i;
-    }
 
-    private void getLocalDB() {
-        if (type.equalsIgnoreCase("movie"))
-            local = Paper.book().read(Constant.PaperDB.MOVIES);
-        else
-            local = Paper.book().read(Constant.PaperDB.SHOWS);
-    }
-
-    private void saveLocalDB() {
-        if (type.equalsIgnoreCase("movie"))
-            Paper.book().write(Constant.PaperDB.MOVIES, local);
-        else
-            Paper.book().write(Constant.PaperDB.SHOWS, local);
-    }
 
 
     private class GetData extends AsyncTask<String, Void, String> {

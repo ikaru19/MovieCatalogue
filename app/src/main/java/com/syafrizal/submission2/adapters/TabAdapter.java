@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Adapters;
+package com.syafrizal.submission2.adapters;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;

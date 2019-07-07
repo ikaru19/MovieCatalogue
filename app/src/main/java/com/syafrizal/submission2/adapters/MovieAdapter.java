@@ -1,4 +1,4 @@
-package com.syafrizal.submission2.Adapters;
+package com.syafrizal.submission2.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -14,7 +14,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.syafrizal.submission2.Models.Movie;
+import com.syafrizal.submission2.models.Movie;
 import com.syafrizal.submission2.R;
 
 import java.util.ArrayList;
