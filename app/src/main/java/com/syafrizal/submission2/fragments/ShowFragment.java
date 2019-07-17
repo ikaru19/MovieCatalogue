@@ -18,6 +18,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 
+import android.widget.SearchView;
+import android.widget.Toast;
+
 import com.syafrizal.submission2.activities.DetailActivity;
 import com.syafrizal.submission2.adapters.MovieAdapter;
 import com.syafrizal.submission2.Constant;
@@ -39,11 +42,12 @@ import static android.support.constraint.Constraints.TAG;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClickListener {
+public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClickListener , SearchView.OnQueryTextListener  {
     private RecyclerView recyclerView;
     private static Retrofit retrofit = null;
     ArrayList<Movie> movies = new ArrayList<>() ;
     MovieAdapter adapter;
+    private SearchView searchView;
 
     public ShowFragment() {
         // Required empty public constructor
@@ -81,6 +85,9 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
         recyclerView = view.findViewById(R.id.showRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+        searchView = view.findViewById(R.id.searchViewShows);
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -129,6 +136,36 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
         });
     }
 
+    public void getSearchData(String search) {
+
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(Constant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        MovieApiService movieApiService = retrofit.create(MovieApiService.class);
+        Call<MovieResponse> call = movieApiService.getSearchTV(search,Constant.API_KEY);
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+
+                if (response.body() == null){
+                    connectAndGetApiData();
+                }else{
+                    movies = response.body().getResults();
+                    adapter.refill(movies);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable throwable) {
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, throwable.toString());
+            }
+        });
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelableArrayList(Constant.SAVED_KEY ,  movies);
@@ -142,5 +179,23 @@ public class ShowFragment extends Fragment implements MovieAdapter.OnAdapterClic
         intent.putExtra("TYPE","show");
         intent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        recyclerView.setVisibility(View.GONE);
+        getSearchData(s);
+
+        recyclerView.setVisibility(View.VISIBLE);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        recyclerView.setVisibility(View.GONE);
+        getSearchData(s);
+
+        recyclerView.setVisibility(View.VISIBLE);
+        return false;
     }
 }

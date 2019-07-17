@@ -19,4 +19,12 @@ public interface MovieApiService {
 
     @GET("tv/{tv_id}/recommendations")
     Call<MovieResponse> getRecTV(@Path("tv_id") String movie_id , @Query("api_key") String apiKey );
+
+
+    @GET("search/movie")
+    Call<MovieResponse> getSearchMovie (@Query("query") String query, @Query("api_key") String apiKey);
+
+    @GET("search/tv")
+    Call<MovieResponse> getSearchTV (@Query("query") String query, @Query("api_key") String apiKey);
+
 }
