@@ -50,9 +50,6 @@ public class MovieReleaseReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        Log.d("SERVICETEST","I'm Running ");
-        Toast.makeText(context, "I'm running", Toast.LENGTH_SHORT).show();
         this.mContext = context;
         getUpcomingMovie();
     }

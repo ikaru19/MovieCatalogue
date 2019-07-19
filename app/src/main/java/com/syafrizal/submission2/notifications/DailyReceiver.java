@@ -34,7 +34,6 @@ public class DailyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         sendNotification(context,"Let's See Your WatchList",context.getString(R.string.daily_notifcation_Title),NOTIFICATION_ID);
     }
 
