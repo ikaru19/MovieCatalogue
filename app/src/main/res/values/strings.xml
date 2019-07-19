@@ -16,6 +16,10 @@
     <string name="appwidget_text">Favorite Movie</string>
     <string name="add_widget">Add widget</string>
     <string name="empty_text">No Data</string>
+    <string name="setting_menu">Setting</string>
+    <string name="daily_notifcation_Title">Let\'s check your Watchlist !</string>
+    <string name="daily_desc">Turn on to get reminder for your watchlist at 7am</string>
+    <string name="new_release_desc">Turn on to get up coming movie at 8am</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <!-- TODO: Remove or change this placeholder text -->

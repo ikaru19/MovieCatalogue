@@ -11,6 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activities.SettingActivity"></activity>
+
         <receiver android:name=".widgets.ImagesBanerWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -21,7 +23,19 @@
                 android:resource="@xml/images_baner_widget_info" />
         </receiver>
 
-        <activity android:name=".activities.DetailActivity"></activity>
+        <receiver
+            android:name=".notifications.DailyReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
+
+        <receiver
+            android:name=".notifications.MovieReleaseReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
+
+        <activity android:name=".activities.DetailActivity" />
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name">

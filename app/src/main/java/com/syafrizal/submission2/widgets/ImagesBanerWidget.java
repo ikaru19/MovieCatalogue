@@ -61,6 +61,7 @@ public class ImagesBanerWidget extends AppWidgetProvider {
                 Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 }
 

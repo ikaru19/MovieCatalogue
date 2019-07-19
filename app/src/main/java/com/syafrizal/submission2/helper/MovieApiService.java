@@ -27,4 +27,7 @@ public interface MovieApiService {
     @GET("search/tv")
     Call<MovieResponse> getSearchTV (@Query("query") String query, @Query("api_key") String apiKey);
 
+
+    @GET("movie/upcoming")
+    Call<MovieResponse> getUpComingMovie(@Query("api_key") String apiKey);
 }
