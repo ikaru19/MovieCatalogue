@@ -41,10 +41,11 @@ public class DailyReceiver extends BroadcastReceiver {
     private void sendNotification(Context context, String title, String desc, int id) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(context, DailyReceiver.class);
+        Intent myIntent = new Intent(context,MainActivity.class);
         PendingIntent pendingIntent = TaskStackBuilder.create(context)
-                .addNextIntent(intent)
+                .addNextIntent(myIntent)
                 .getPendingIntent(NOTIFICATION_ID,PendingIntent.FLAG_UPDATE_CURRENT);
+
         Uri uriTone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,CHANNEL_ID)

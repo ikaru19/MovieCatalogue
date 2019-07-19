@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.syafrizal.submission2.Constant;
 import com.syafrizal.submission2.R;
+import com.syafrizal.submission2.activities.DetailActivity;
 import com.syafrizal.submission2.helper.MovieApiService;
 import com.syafrizal.submission2.models.Movie;
 import com.syafrizal.submission2.models.MovieResponse;
@@ -70,9 +71,9 @@ public class MovieReleaseReceiver extends BroadcastReceiver {
                 movies = response.body().getResults();
                 int index = new Random().nextInt(movies.size());
                 Movie movie = movies.get(index);
-                String title = movie.getTitle() + " Just Come Out !";
+                String title = " ' " + movie.getTitle() + " '  Just Come Out !";
                 String message = movie.getOverview();
-                sendNotification(mContext, title, message, NOTIFICATION_ID_);
+                sendNotification(mContext, title, message,movie);
 
             }
 
@@ -85,10 +86,13 @@ public class MovieReleaseReceiver extends BroadcastReceiver {
     }
 
 
-    private void sendNotification(Context context, String title, String desc, int id) {
+    private void sendNotification(Context context, String title, String desc, Movie movie) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(context, DailyReceiver.class);
+//        Intent intent = new Intent(context, DailyReceiver.class);
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra("TYPE", "movie");
+        intent.putExtra(DetailActivity.EXTRA_MOVIE, movie);
         PendingIntent pendingIntent = TaskStackBuilder.create(context)
                 .addNextIntent(intent)
                 .getPendingIntent(NOTIFICATION_ID,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -98,6 +102,8 @@ public class MovieReleaseReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_movies_black)
                 .setContentTitle(title)
                 .setContentText(desc)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(desc))
                 .setContentIntent(pendingIntent)
                 .setColor(ContextCompat.getColor(context, android.R.color.transparent))
                 .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
@@ -123,7 +129,7 @@ public class MovieReleaseReceiver extends BroadcastReceiver {
 
 
         if (notificationManager != null) {
-            notificationManager.notify(id, notification);
+            notificationManager.notify(NOTIFICATION_ID_, notification);
         }
 
     }

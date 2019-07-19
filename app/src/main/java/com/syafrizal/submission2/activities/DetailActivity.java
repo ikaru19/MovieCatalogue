@@ -88,9 +88,7 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
             btnWatchList.setText(getString(R.string.remove_watchlist));
         }
 
-        if (favoriteHelper.getAllMovies().isEmpty()){
-            Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
-        }
+
 
 
         adapter = new RecomendationAdapter(this, type);
@@ -188,7 +186,6 @@ public class DetailActivity extends AppCompatActivity implements MovieAdapter.On
             }
 
             MovieApiService movieApiService = retrofit.create(MovieApiService.class);
-
             if (DetailActivity.this.type.equalsIgnoreCase("movie")) {
                 Call<MovieResponse> call = movieApiService.getRecMov(movie.getId().toString(), Constant.API_KEY);
                 call.enqueue(new Callback<MovieResponse>() {
